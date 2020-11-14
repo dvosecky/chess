@@ -1,0 +1,33 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "description": "Chess webapp with Node and React",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd client && npm run build && cd .. && node index.js",
+    "client": "cd client && npm start",
+    "server": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvosecky/chess.git"
+  },
+  "author": "Danny Vosecky",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/dvosecky/chess/issues"
+  },
+  "homepage": "https://github.com/dvosecky/chess#readme",
+  "dependencies": {
+    "connect-mongo": "^3.2.0",
+    "debug": "^4.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "helmet": "^4.2.0",
+    "mongoose": "^5.10.14"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
