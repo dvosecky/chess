@@ -4,7 +4,8 @@
   "description": "Chess webapp with Node and React",
   "main": "index.js",
   "scripts": {
-    "start": "cd client && npm run build && cd .. && node index.js",
+    "start": "node index.js",
+    "deploy": "git checkout deploy && git merge main && cd client && npm run build && git add build && git commit -m 'deploy' && git push && git checkout main",
     "client": "cd client && npm start",
     "server": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
