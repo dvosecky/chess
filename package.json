@@ -21,12 +21,9 @@
   },
   "homepage": "https://github.com/dvosecky/chess#readme",
   "dependencies": {
-    "connect-mongo": "^3.2.0",
     "debug": "^4.2.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "helmet": "^4.2.0",
-    "mongoose": "^5.10.14"
+    "helmet": "^4.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
