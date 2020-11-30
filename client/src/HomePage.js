@@ -24,9 +24,9 @@ function HomePage() {
       <div className="sub-container">
         <h1>Chess</h1>
         <p>
-          Play Chess with your friends! Create a game below and share the link with your opponent.
+          Play Chess with your friends!
         </p>
-        <button onClick={createGame}>Create Game!</button>
+        <button onClick={createGame}>Create Game</button>
       </div>
       {newGameId !== '' && <NewGame id={newGameId}/>}
     </div>
