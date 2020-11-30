@@ -11,3 +11,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.m-1 {
+  margin: 0.5rem;
+}
+
+h1 {
+  margin: 0;
+}
+
+button {
+  padding: 0.3rem;
+}
+
+.sub-container {
+  display: block;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: #eee;
+}
+
+.main-container {
+  width: 800px;
+  margin: auto;
+}
+
+.copy-url {
+  padding: 2px;
+  border: 1px solid #000;
+  background-color: #fff;
+  cursor: pointer;
+  -moz-user-select: all;
+  -webkit-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
