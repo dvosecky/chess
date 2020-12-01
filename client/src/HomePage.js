@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Redirect } from 'react-router-dom'
 
 function HomePage() {
 
@@ -33,6 +34,7 @@ function HomePage() {
 }
 
 function NewGame({ id }) {
+  const [joinGame, setJoinGame] = useState(false)
 
 	return (
     <div className="sub-container">
@@ -40,7 +42,8 @@ function NewGame({ id }) {
       Share this link with your opponent:&nbsp;
       <span className="copy-url">{process.env.REACT_APP_BASEURL + '/' + id}/</span>
       </div>
-      <button>Join Game</button>
+      <button onClick={() => setJoinGame(true)}>Join Game</button>
+      {joinGame && <Redirect to={'/game/' + id} />}
     </div>
   )
 }
