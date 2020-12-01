@@ -5,18 +5,17 @@ function HomePage() {
   const [newGameId, setNewGameId] = useState('')
 
   const createGame = () => {
-    // fetch('game/create', {
-    //   method: 'POST',
-    // }).then((res) => {
-    //   return res.json()
-    // }).then((json) => {
-    //   if (json.status === 'success') {
-    //     setNewGameId(json.data.id)
-    //   } else if (json.status === 'error') {
-    //     console.error(json.message)
-    //   }
-    // }).catch(console.error.bind(console))
-    setNewGameId('1234')
+    fetch('game/create', {
+      method: 'POST',
+    }).then((res) => {
+      return res.json()
+    }).then((json) => {
+      if (json.status === 'success') {
+        setNewGameId(json.data.id)
+      } else if (json.status === 'error') {
+        console.error(json.message)
+      }
+    }).catch(console.error.bind(console))
   }
 
   return (
