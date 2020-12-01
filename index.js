@@ -17,11 +17,61 @@ app.get('/api/hello', (req, res) => {
 
 let games = []
 
+const PAWN = 'pawn'
+const KNIGHT = 'knight'
+const BISHOP = 'bishop'
+const ROOK = 'rook'
+const QUEEN = 'queen'
+const KING = 'king'
+const WHITE = 'white'
+const BLACK = 'black'
+
+const piecePositions = {
+	a: ROOK,
+	b: KNIGHT,
+	c: BISHOP,
+	d: QUEEN,
+	e: KING,
+	f: BISHOP,
+	g: KNIGHT,
+	h: ROOK
+}
+
 app.post('/game/create', (req, res) => {
 	const newGame = {
 		id: games.length,
 		squares: []
 	}
+	for (let i = 0; i < 64; i++) {
+		const letter = 'abcdefgh'[i % 8]
+		const number = Math.floor(i / 8) + 1
+		const newSquare = {
+			name: letter + number
+		}
+		if (number === 2) {
+			newSquare.piece = {
+				type: PAWN,
+				player: WHITE
+			}
+		} else if (number === 7) {
+			newSquare.piece = {
+				type: PAWN,
+				player: BLACK
+			}
+		} else if (number === 1) {
+			newSquare.piece = {
+				type: piecePositions[letter],
+				player: WHITE
+			}
+		} else if (number === 8) {
+			newSquare.piece = {
+				type: piecePositions[letter],
+				player: BLACK
+			}
+		}
+		newGame.squares.push(newSquare)
+	}
+
 	games.push(newGame)
 
 	debug('created game ' + newGame.id)
