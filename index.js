@@ -83,26 +83,33 @@ app.post('/game/create', (req, res) => {
 io.on('connection', (socket) => {
 
 	socket.on('join', (gameId) => {
+		// make sure game exists
 		if (!games[gameId]) {
 			socket.emit('join failed', 'invalid game')
 			return
 		}
 
+		// join game
 		socket.join(gameId)
 		const game = games[gameId]
 
+		// set sides
 		if (!game.white) {
 			debug(socket.id + ' joined game ' + gameId + ' as white')
 			game.white = socket.id
-			debug(game.white)
-			socket.emit('play side', 'white')
 		} else if (!game.black) {
 			debug(socket.id + ' joined game ' + gameId + ' as black')
 			game.black = socket.id
-			socket.emit('play side', 'black')
 		} else {
 			socket.emit('join failed', 'room full')
 		}
+
+		// send game data
+		socket.emit('game data', game)
+
+		socket.on('disconnect', () => {
+			debug('disconnected')
+		})
 	})
 })
 

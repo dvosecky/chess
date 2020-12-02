@@ -16,14 +16,15 @@ function GamePage() {
 			setJoinFailed(true)
 		})
 
-		socket.on('play side', (side) => {
-			if (side === 'white') {
+		socket.on('game data', (game) => {
+			if (game.white === socket.id) {
 				setSide('white')
-			} else if (side === 'black') {
+			} else if (game.black === socket.id) {
 				setSide('black')
 			}
 		})
-	}, [])
+
+	}, [id])
 
 	return (
 		<div>
