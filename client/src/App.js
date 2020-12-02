@@ -1,12 +1,28 @@
 import './App.css';
+
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+
 import HomePage from './HomePage.js'
+import GamePage from './GamePage.js'
 
 function App() {
 
   return (
-    <div className="App">
-      <HomePage />
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route path="/game/:id">
+            <GamePage />
+          </Route>
+          <Route exact path="/">
+            <HomePage />
+          </Route>
+          <Route path="*">
+            <Redirect to="/"/>
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
