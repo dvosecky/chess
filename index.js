@@ -1,9 +1,9 @@
 const debug = require('debug')('server')
 
-// express
 const express = require('express')
 const app = express()
-app.listen(process.env.PORT || 3001)
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
 
 const helmet = require('helmet')
 
@@ -14,6 +14,8 @@ app.use(express.static(__dirname + '/client/build'))
 app.get('/api/hello', (req, res) => {
 	res.send('hello from the API')
 })
+
+
 
 let games = []
 
@@ -78,6 +80,34 @@ app.post('/game/create', (req, res) => {
 	res.status(201).json({ status: 'success', data: { id: newGame.id } })
 })
 
+io.on('connection', (socket) => {
+
+	socket.on('join', (gameId) => {
+		if (!games[gameId]) {
+			socket.emit('join failed', 'invalid game')
+			return
+		}
+
+		socket.join(gameId)
+		const game = games[gameId]
+
+		if (!game.white) {
+			debug(socket.id + ' joined game ' + gameId + ' as white')
+			game.white = socket.id
+			debug(game.white)
+			socket.emit('play side', 'white')
+		} else if (!game.black) {
+			debug(socket.id + ' joined game ' + gameId + ' as black')
+			game.black = socket.id
+			socket.emit('play side', 'black')
+		} else {
+			socket.emit('join failed', 'room full')
+		}
+	})
+})
+
 app.get('/*', (req, res) => {
 	res.sendFile(__dirname + '/client/build/index.html')
 })
+
+server.listen(process.env.PORT || 3001)

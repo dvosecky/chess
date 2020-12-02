@@ -40,7 +40,7 @@ function NewGame({ id }) {
     <div className="sub-container">
       <div className="m-1">
       Share this link with your opponent:&nbsp;
-      <span className="copy-url">{process.env.REACT_APP_BASEURL + '/' + id}/</span>
+      <span className="copy-url">{process.env.REACT_APP_BASEURL + '/game/' + id}</span>
       </div>
       <button onClick={() => setJoinGame(true)}>Join Game</button>
       {joinGame && <Redirect to={'/game/' + id} />}
