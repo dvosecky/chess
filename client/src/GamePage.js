@@ -59,40 +59,35 @@ function GamePage() {
 	// }, [id])
 
 	const updateAbsPos = (e) => {
-		setAbsPos({
-			position: 'absolute',
-			pointerEvents: 'none',
-			left: e.pageX - window.innerHeight / 16 + 'px',
-			top: e.pageY - window.innerHeight / 16 + 'px'
-		})
+		if (draggedPiece) {
+			setAbsPos({
+				position: 'absolute',
+				pointerEvents: 'none',
+				left: e.pageX - window.innerHeight / 16 + 'px',
+				top: e.pageY - window.innerHeight / 16 + 'px'
+			})
+		}
 	}
 
 	const dragPiece = (e, square) => {
 		setDraggedPiece(square.piece)
 		updateAbsPos(e)
-		document.addEventListener('mousemove', updateAbsPos)
 	}
 
 	const dropPiece = (square => {
 		if (draggedPiece) {
-			console.log('up')
 			setPieces((pieces) => {
 				const newPieces = pieces.slice()
 				const index = newPieces.indexOf(draggedPiece)
-				console.log('index is ' , index)
-				console.log('square.name is ', square.name)
 				newPieces[index] = Object.assign(draggedPiece, { square: square.name })
 				return newPieces
 			})
 			setDraggedPiece(null)
-			document.removeEventListener('mousemove', updateAbsPos)
-		} else {
-			console.log(square.name)
 		}
 	})
 
 	return (
-		<div>
+		<div onMouseMove={updateAbsPos}>
 			<h1>This is game {id}</h1>
 			<h2>You are playing as {side}</h2>
 			{joinFailed && <Redirect to="/"/>}
