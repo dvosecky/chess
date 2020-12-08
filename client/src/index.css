@@ -1,3 +1,7 @@
+:root {
+  --board-size: 100vh;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -49,16 +53,15 @@ button {
 
 .square {
   display: inline-block;
-  width: 64px;
+  width: 12.5%;
   height: 100%;
   background-color: #975;
 }
 
 .row {
-  height: 64px;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  height: calc(var(--board-size) / 8);
+  width: var(--board-size);
+  margin: auto;
 }
 
 .row:nth-child(odd) .square:nth-child(odd),
@@ -67,7 +70,7 @@ button {
 }
 
 .white-pawn {
-  width: 100%;
-  height: 100%;
+  width: calc(var(--board-size) / 8);
+  height: calc(var(--board-size) / 8);
   background-color: purple;
 }
