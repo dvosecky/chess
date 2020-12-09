@@ -6,45 +6,34 @@ function GamePage() {
 	const { id } = useParams()
 	const [joinFailed, setJoinFailed] = useState(false)
 	const [side, setSide] = useState()
-	const [pieces, setPieces] = useState([])
+	const [pieces, setPieces] = useState([{ type: 'pawn', player: 'white', square: 'a1' }])
 	const [absPos, setAbsPos] = useState({ position: 'absolute', top: 0, left: 0 })
 	const [draggedPiece, setDraggedPiece] = useState(null)
 
-	const squares = []
-
-	// release dragged pieces if mouseup happens off of the board
-	useEffect(() => {
-		const endDrag = () => {
-			setDraggedPiece(null)
-		}
-		document.addEventListener('mouseup', endDrag)
-		return () => document.removeEventListener('mouseup', endDrag)
-	}, [])
-
 	// connect to game
-	useEffect(() => {
-		const socket = io()
-		socket.emit('join', id)
+	// useEffect(() => {
+	// 	const socket = io()
+	// 	socket.emit('join', id)
 
-		socket.on('join failed', (reason) => {
-			console.log('join failed: ' + reason)
-			setJoinFailed(true) // will cause redirect to home
-		})
+	// 	socket.on('join failed', (reason) => {
+	// 		console.log('join failed: ' + reason)
+	// 		setJoinFailed(true) // will cause redirect to home
+	// 	})
 
-		socket.on('game data', (game) => {
-			if (game.white === socket.id) {
-				setSide('white')
-			} else if (game.black === socket.id) {
-				setSide('black')
-			}
-			setPieces(game.pieces)
-		})
+	// 	socket.on('game data', (game) => {
+	// 		if (game.white === socket.id) {
+	// 			setSide('white')
+	// 		} else if (game.black === socket.id) {
+	// 			setSide('black')
+	// 		}
+	// 		setPieces(game.pieces)
+	// 	})
 
-		return function cleanup() {
-			socket.disconnect()
-		}
+	// 	return function cleanup() {
+	// 		socket.disconnect()
+	// 	}
 
-	}, [id])
+	// }, [id])
 
 	const trackMouse = (e) => {
 		setAbsPos({
@@ -60,57 +49,62 @@ function GamePage() {
 		trackMouse(e)
 	}
 
-	const endDrag = (square => {
+	const endDrag = (e) => {
 		if (draggedPiece) {
-			setPieces((pieces) => {
-				const newPieces = pieces.slice()
-				const index = newPieces.indexOf(draggedPiece)
-				newPieces[index] = Object.assign(draggedPiece, { square: square.name })
-				return newPieces
+			// find the new square
+			const square = squares.find((square) => {
+				return square.id === document.elementFromPoint(e.clientX, e.clientY).id
 			})
+
+			// if square was found, place piece there
+			if (square) {
+				setPieces((pieces) => {
+					const newPieces = pieces.slice()
+					const index = newPieces.indexOf(draggedPiece)
+					newPieces[index] = Object.assign(draggedPiece, { square: square.id })
+					return newPieces
+				})
+			}
+
 			setDraggedPiece(null)
-		}
-	})
-
-	// initialize squares
-	for (let i = 0; i < 8; i++) {
-		squares.push([])
-		for (let j = 0; j < 8; j++) {
-			const square = {}
-			square.name = (side === 'white') ? 'abcdefgh'[j] + (8 - i) : 'hgfedcba'[j] + (i + 1)
-			square.piece = null
-
-			// if there is a piece on this square add it
-			pieces.forEach((piece) => {
-				if (piece.square === square.name) {
-					square.piece = piece
-				}
-			})
-			squares[i].push(square)
 		}
 	}
 
+	// set squares
+	const squares = []
+	for (let i = 0; i < 64; i++) {
+		const square = {}
+		const row = Math.floor(i / 8)
+		const col = i % 8 
+		square.id = (side === 'white') ? 'abcdefgh'[col] + (8 - row) : 'hgfedcba'[col] + (row + 1)
+		square.piece = null
+
+		// if there is a piece on this square add it
+		pieces.forEach((piece) => {
+			if (piece.square === square.id) {
+				square.piece = piece
+			}
+		})
+		squares.push(square)
+	}
+
 	return (
-		<div onMouseMove={trackMouse}>
+		<div onMouseMove={trackMouse} onMouseUp={endDrag}>
 			<h1>This is game {id}</h1>
 			<h2>You are playing as {side}</h2>
 			{joinFailed && <Redirect to="/"/>}
-			{squares.map((row, rowNum) => {
-				return (
-					<div className="row" key={(rowNum + 1)}>{
-						row.map((square) => {
-							return (
-								<div className="square" key={square.name} onMouseUp={() => endDrag(square)}>
-									{square.piece && draggedPiece !== square.piece &&
-									<div className={'piece ' + square.piece.player + '-' + square.piece.type}
-										onMouseDown={(e) => startDrag(e, square)}
-									/>}
-								</div>
-							)
-						})
-					}</div>
-				)
-			})}
+			<div id="board">
+				{squares.map((square) => {
+					return (
+						<div id={square.id} className="square" key={square.id}>
+							{square.piece && draggedPiece !== square.piece &&
+							<div className={'piece ' + square.piece.player + '-' + square.piece.type}
+							onMouseDown={(e) => startDrag(e, square)}
+							/>}
+						</div>
+					)
+				})}
+			</div>
 			{draggedPiece &&
 			<div className={'piece ' + draggedPiece.player + '-' + draggedPiece.type} style={absPos}/>}
 		</div>

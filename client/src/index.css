@@ -1,5 +1,5 @@
 :root {
-  --board-size: 100vh;
+  --board-size: 100vmin;
 }
 
 body {
@@ -51,21 +51,30 @@ button {
   user-select: all;
 }
 
-.square {
-  display: inline-block;
-  width: 12.5%;
-  height: 100%;
-  background-color: #975;
-}
 
-.row {
-  height: calc(var(--board-size) / 8);
+/* Game */
+#board {
+  display: flex;
+  flex-wrap: wrap;
   width: var(--board-size);
   margin: auto;
 }
 
-.row:nth-child(odd) .square:nth-child(odd),
-.row:nth-child(even) .square:nth-child(even) {
+.square {
+  width: 12.5%;
+  height: calc(var(--board-size) / 8);
+  background-color: #975;
+}
+
+.square:nth-child(16n + 1),
+.square:nth-child(16n + 3),
+.square:nth-child(16n + 5),
+.square:nth-child(16n + 7),
+.square:nth-child(16n + 10),
+.square:nth-child(16n + 12),
+.square:nth-child(16n + 14),
+.square:nth-child(16n + 16)
+{
   background-color: #fdb;
 }
 
