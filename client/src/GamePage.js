@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
 
@@ -35,14 +35,7 @@ function GamePage() {
 
 	// }, [id])
 
-	const trackMouse = (e) => {
-		setAbsPos({
-			position: 'absolute',
-			pointerEvents: 'none',
-			left: e.pageX - window.innerHeight / 16 + 'px',
-			top: e.pageY - window.innerHeight / 16 + 'px'
-		})
-	}
+
 
 	const startDrag = (e, square) => {
 		setDraggedPiece(square.piece)
@@ -53,7 +46,7 @@ function GamePage() {
 		if (draggedPiece) {
 			// find the new square
 			const square = squares.find((square) => {
-				return square.id === document.elementFromPoint(e.clientX, e.clientY).id
+				return square.id === document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY).id
 			})
 
 			// if square was found, place piece there
@@ -88,25 +81,54 @@ function GamePage() {
 		squares.push(square)
 	}
 
+	const page = useRef()
+
+	const trackMouse = (e) => {
+		const offset = Math.min(window.innerWidth, window.innerHeight) / 16
+		setAbsPos({
+			position: 'absolute',
+			pointerEvents: 'none',
+			left: e.changedTouches[0].pageX - offset + 'px',
+			top: e.changedTouches[0].pageY - offset + 'px'
+		})
+	}
+
+	useEffect(() => {
+		const touchMove = (e) => {
+			if (draggedPiece) {
+				e.preventDefault()
+				trackMouse(e)
+			}
+		}
+
+		const pageElement = page.current
+		pageElement.addEventListener('touchmove', touchMove, { passive: false })
+		return (() => {
+			pageElement.removeEventListener('touchmove', touchMove, { passive: false })
+		})
+	}, [draggedPiece])
+
 	return (
-		<div onMouseMove={trackMouse} onMouseUp={endDrag}>
+		<div
+			ref={page}
+			onTouchEnd={endDrag}
+		>
 			<h1>This is game {id}</h1>
 			<h2>You are playing as {side}</h2>
 			{joinFailed && <Redirect to="/"/>}
-			<div id="board">
+			<div id="board" draggable="false">
 				{squares.map((square) => {
 					return (
-						<div id={square.id} className="square" key={square.id}>
-							{square.piece && draggedPiece !== square.piece &&
+						<div id={square.id} className="square" key={square.id} draggable="false">
+							{square.piece &&
 							<div className={'piece ' + square.piece.player + '-' + square.piece.type}
-							onMouseDown={(e) => startDrag(e, square)}
+								onTouchStart={(e) => startDrag(e, square)}
+								style={draggedPiece === square.piece ? absPos : {}}
 							/>}
 						</div>
 					)
 				})}
 			</div>
-			{draggedPiece &&
-			<div className={'piece ' + draggedPiece.player + '-' + draggedPiece.type} style={absPos}/>}
 		</div>
 	)
 }
