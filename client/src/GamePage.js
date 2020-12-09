@@ -5,76 +5,62 @@ import io from 'socket.io-client'
 function GamePage() {
 	const { id } = useParams()
 	const [joinFailed, setJoinFailed] = useState(false)
-	const [side, setSide] = useState('black')
-	// const [squares, setSquares] = useState(null)
-	const [pieces, setPieces] = useState([{ square: 'a2', type: 'pawn', player: 'white' }])
+	const [side, setSide] = useState()
+	const [pieces, setPieces] = useState([])
 	const [absPos, setAbsPos] = useState({ position: 'absolute', top: 0, left: 0 })
 	const [draggedPiece, setDraggedPiece] = useState(null)
 
 	const squares = []
 
-	// initialize squares
-	for (let i = 0; i < 8; i++) {
-		squares.push([])
-		for (let j = 0; j < 8; j++) {
-			const name = (side === 'white') ? 'abcdefgh'[j] + (8 - i) : 'hgfedcba'[j] + (i + 1)
-			squares[i].push({ piece: null, name })
+	// release dragged pieces if mouseup happens off of the board
+	useEffect(() => {
+		const endDrag = () => {
+			setDraggedPiece(null)
 		}
-	}
+		document.addEventListener('mouseup', endDrag)
+		return () => document.removeEventListener('mouseup', endDrag)
+	}, [])
 
-	// add pieces to squares
-	pieces.forEach((piece) => {
-		squares.forEach((row) => {
-			row.forEach((square) => {
-				if (piece.square === square.name) {
-					square.piece = piece
-				}
-			})
+	// connect to game
+	useEffect(() => {
+		const socket = io()
+		socket.emit('join', id)
+
+		socket.on('join failed', (reason) => {
+			console.log('join failed: ' + reason)
+			setJoinFailed(true) // will cause redirect to home
 		})
-	})
 
+		socket.on('game data', (game) => {
+			if (game.white === socket.id) {
+				setSide('white')
+			} else if (game.black === socket.id) {
+				setSide('black')
+			}
+			setPieces(game.pieces)
+		})
 
-	// useEffect(() => {
-	// 	const socket = io()
-	// 	socket.emit('join', id)
-
-	// 	socket.on('join failed', (reason) => {
-	// 		console.log('join failed: ' + reason)
-	// 		setJoinFailed(true)
-	// 	})
-
-	// 	socket.on('game data', (game) => {
-	// 		if (game.white === socket.id) {
-	// 			setSide('white')
-	// 		} else if (game.black === socket.id) {
-	// 			setSide('black')
-	// 		}
-	// 		setSquares(game.squares)
-	// 	})
-
-	// 	return function cleanup() {
-	// 		socket.disconnect()
-	// 	}
-
-	// }, [id])
-
-	const updateAbsPos = (e) => {
-		if (draggedPiece) {
-			setAbsPos({
-				position: 'absolute',
-				pointerEvents: 'none',
-				left: e.pageX - window.innerHeight / 16 + 'px',
-				top: e.pageY - window.innerHeight / 16 + 'px'
-			})
+		return function cleanup() {
+			socket.disconnect()
 		}
+
+	}, [id])
+
+	const trackMouse = (e) => {
+		setAbsPos({
+			position: 'absolute',
+			pointerEvents: 'none',
+			left: e.pageX - window.innerHeight / 16 + 'px',
+			top: e.pageY - window.innerHeight / 16 + 'px'
+		})
 	}
 
-	const dragPiece = (e, square) => {
+	const startDrag = (e, square) => {
 		setDraggedPiece(square.piece)
-		updateAbsPos(e)
+		trackMouse(e)
 	}
 
-	const dropPiece = (square => {
+	const endDrag = (square => {
 		if (draggedPiece) {
 			setPieces((pieces) => {
 				const newPieces = pieces.slice()
@@ -86,8 +72,26 @@ function GamePage() {
 		}
 	})
 
+	// initialize squares
+	for (let i = 0; i < 8; i++) {
+		squares.push([])
+		for (let j = 0; j < 8; j++) {
+			const square = {}
+			square.name = (side === 'white') ? 'abcdefgh'[j] + (8 - i) : 'hgfedcba'[j] + (i + 1)
+			square.piece = null
+
+			// if there is a piece on this square add it
+			pieces.forEach((piece) => {
+				if (piece.square === square.name) {
+					square.piece = piece
+				}
+			})
+			squares[i].push(square)
+		}
+	}
+
 	return (
-		<div onMouseMove={updateAbsPos}>
+		<div onMouseMove={trackMouse}>
 			<h1>This is game {id}</h1>
 			<h2>You are playing as {side}</h2>
 			{joinFailed && <Redirect to="/"/>}
@@ -96,10 +100,10 @@ function GamePage() {
 					<div className="row" key={(rowNum + 1)}>{
 						row.map((square) => {
 							return (
-								<div className="square" key={square.name} onMouseUp={() => dropPiece(square)}>
+								<div className="square" key={square.name} onMouseUp={() => endDrag(square)}>
 									{square.piece && draggedPiece !== square.piece &&
-									<div className={square.piece.player + '-' + square.piece.type}
-										onMouseDown={(e) => dragPiece(e, square)}
+									<div className={'piece ' + square.piece.player + '-' + square.piece.type}
+										onMouseDown={(e) => startDrag(e, square)}
 									/>}
 								</div>
 							)
@@ -108,7 +112,7 @@ function GamePage() {
 				)
 			})}
 			{draggedPiece &&
-			<div className={draggedPiece.player + '-' + draggedPiece.type} style={absPos}/>}
+			<div className={'piece ' + draggedPiece.player + '-' + draggedPiece.type} style={absPos}/>}
 		</div>
 	)
 }

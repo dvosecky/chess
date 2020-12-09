@@ -69,8 +69,55 @@ button {
   background-color: #fdb;
 }
 
-.white-pawn {
+.piece {
   width: calc(var(--board-size) / 8);
   height: calc(var(--board-size) / 8);
-  background-color: purple;
+}
+
+.white-pawn {
+  background: url('./assets/Chess_plt45.svg') center/cover;
+}
+
+.black-pawn {
+  background: url('./assets/Chess_pdt45.svg') center/cover;
+}
+
+.white-knight {
+  background: url('./assets/Chess_nlt45.svg') center/cover;
+}
+
+.black-knight {
+  background: url('./assets/Chess_ndt45.svg') center/cover;
+}
+
+.white-bishop {
+  background: url('./assets/Chess_blt45.svg') center/cover;
+}
+
+.black-bishop {
+  background: url('./assets/Chess_bdt45.svg') center/cover;
+}
+
+.white-rook {
+  background: url('./assets/Chess_rlt45.svg') center/cover;
+}
+
+.black-rook {
+  background: url('./assets/Chess_rdt45.svg') center/cover;
+}
+
+.white-queen {
+  background: url('./assets/Chess_qlt45.svg') center/cover;
+}
+
+.black-queen {
+  background: url('./assets/Chess_qdt45.svg') center/cover;
+}
+
+.white-king {
+  background: url('./assets/Chess_klt45.svg') center/cover;
+}
+
+.black-king {
+  background: url('./assets/Chess_kdt45.svg') center/cover;
 }
