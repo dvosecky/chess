@@ -1,3 +1,7 @@
+:root {
+  --board-size: 100vh;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -45,4 +49,75 @@ button {
   -webkit-user-select: all;
   -ms-user-select: all;
   user-select: all;
+}
+
+.square {
+  display: inline-block;
+  width: 12.5%;
+  height: 100%;
+  background-color: #975;
+}
+
+.row {
+  height: calc(var(--board-size) / 8);
+  width: var(--board-size);
+  margin: auto;
+}
+
+.row:nth-child(odd) .square:nth-child(odd),
+.row:nth-child(even) .square:nth-child(even) {
+  background-color: #fdb;
+}
+
+.piece {
+  width: calc(var(--board-size) / 8);
+  height: calc(var(--board-size) / 8);
+}
+
+.white-pawn {
+  background: url('./assets/Chess_plt45.svg') center/cover;
+}
+
+.black-pawn {
+  background: url('./assets/Chess_pdt45.svg') center/cover;
+}
+
+.white-knight {
+  background: url('./assets/Chess_nlt45.svg') center/cover;
+}
+
+.black-knight {
+  background: url('./assets/Chess_ndt45.svg') center/cover;
+}
+
+.white-bishop {
+  background: url('./assets/Chess_blt45.svg') center/cover;
+}
+
+.black-bishop {
+  background: url('./assets/Chess_bdt45.svg') center/cover;
+}
+
+.white-rook {
+  background: url('./assets/Chess_rlt45.svg') center/cover;
+}
+
+.black-rook {
+  background: url('./assets/Chess_rdt45.svg') center/cover;
+}
+
+.white-queen {
+  background: url('./assets/Chess_qlt45.svg') center/cover;
+}
+
+.black-queen {
+  background: url('./assets/Chess_qdt45.svg') center/cover;
+}
+
+.white-king {
+  background: url('./assets/Chess_klt45.svg') center/cover;
+}
+
+.black-king {
+  background: url('./assets/Chess_kdt45.svg') center/cover;
 }

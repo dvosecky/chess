@@ -28,51 +28,47 @@ const KING = 'king'
 const WHITE = 'white'
 const BLACK = 'black'
 
-const piecePositions = {
-	a: ROOK,
-	b: KNIGHT,
-	c: BISHOP,
-	d: QUEEN,
-	e: KING,
-	f: BISHOP,
-	g: KNIGHT,
-	h: ROOK
-}
+const piecePositions = [
+	ROOK,
+	KNIGHT,
+	BISHOP,
+	QUEEN,
+	KING,
+	BISHOP,
+	KNIGHT,
+	ROOK
+]
+
+const columnLetters = 'abcdefgh'
 
 app.post('/game/create', (req, res) => {
 	const newGame = {
-		id: games.length,
-		squares: []
+		id: games.length
 	}
-	for (let i = 0; i < 64; i++) {
-		const letter = 'abcdefgh'[i % 8]
-		const number = Math.floor(i / 8) + 1
-		const newSquare = {
-			name: letter + number
-		}
-		if (number === 2) {
-			newSquare.piece = {
-				type: PAWN,
-				player: WHITE
-			}
-		} else if (number === 7) {
-			newSquare.piece = {
-				type: PAWN,
-				player: BLACK
-			}
-		} else if (number === 1) {
-			newSquare.piece = {
-				type: piecePositions[letter],
-				player: WHITE
-			}
-		} else if (number === 8) {
-			newSquare.piece = {
-				type: piecePositions[letter],
-				player: BLACK
-			}
-		}
-		newGame.squares.push(newSquare)
+	const pieces = []
+	for (let i = 0; i < 8; i++) {
+		pieces.push({
+			type: PAWN,
+			player: WHITE,
+			square: columnLetters[i] + '2'
+		})
+		pieces.push({
+			type: piecePositions[i],
+			player: WHITE,
+			square: columnLetters[i] + '1'
+		})
+		pieces.push({
+			type: PAWN,
+			player: BLACK,
+			square: columnLetters[i] + '7'
+		})
+		pieces.push({
+			type: piecePositions[i],
+			player: BLACK,
+			square: columnLetters[i] + '8'
+		})
 	}
+	newGame.pieces = pieces
 
 	games.push(newGame)
 
