@@ -11,7 +11,7 @@ function App() {
     <Router>
       <div className="App">
         <Switch>
-          <Route path="/game/:id">
+          <Route path="/game/:gameId">
             <GamePage />
           </Route>
           <Route exact path="/">

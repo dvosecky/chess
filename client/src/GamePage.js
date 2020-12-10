@@ -3,7 +3,8 @@ import { Redirect, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
 
 function GamePage() {
-	const { id } = useParams()
+	const { gameId } = useParams()
+	const [socket, setSocket] = useState(null)
 	const [joinFailed, setJoinFailed] = useState(false)
 	const [side, setSide] = useState()
 	const [pieces, setPieces] = useState([])
@@ -31,31 +32,32 @@ function GamePage() {
 		return squares
 	}, [pieces, side])
 
-
-	// connect to game
+	// initialize socket, connect to game
 	useEffect(() => {
-		const socket = io()
-		socket.emit('join', id)
-
-		socket.on('join failed', (reason) => {
+		const mySocket = io()
+		mySocket.emit('join', gameId)
+		
+		mySocket.on('join failed', (reason) => {
 			console.log('join failed: ' + reason)
 			setJoinFailed(true) // will cause redirect to home
 		})
-
-		socket.on('game data', (game) => {
-			if (game.white === socket.id) {
+		
+		mySocket.on('game data', (game) => {
+			if (game.white === mySocket.id) {
 				setSide('white')
-			} else if (game.black === socket.id) {
+			} else if (game.black === mySocket.id) {
 				setSide('black')
 			}
 			setPieces(game.pieces)
 		})
 
+		setSocket(mySocket)
+
 		return function cleanup() {
-			socket.disconnect()
+			mySocket.disconnect()
 		}
 
-	}, [id])
+	}, [gameId])
 
 	// using native DOM events to allow preventDefault() with TouchEvents (non-passive)
 	// these events are for drag-and-dropping pieces
@@ -100,12 +102,15 @@ function GamePage() {
 				})
 				if (square && !square.piece) {
 					// set the dropped piece's new square
+					const previousSquare = draggedPiece.square
 					setPieces((pieces) => {
 						const newPieces = pieces.slice()
 						const index = newPieces.indexOf(draggedPiece)
 						newPieces[index] = Object.assign(draggedPiece, { square: square.id })
 						return newPieces
 					})
+					// send the move to server
+					socket.emit('move', previousSquare, square.id)
 				}
 				setDraggedPiece(null)
 			}
@@ -134,11 +139,11 @@ function GamePage() {
 			pageElement.removeEventListener('touchend', endDrag, { passive: false })
 			pageElement.removeEventListener('mouseup', endDrag)
 		})
-	}, [squares, draggedPiece])
+	}, [squares, draggedPiece, socket])
 
 	return (
 		<div ref={page}>
-			<h1>This is game {id}</h1>
+			<h1>This is game {gameId}</h1>
 			<h2>You are playing as {side}</h2>
 			{joinFailed && <Redirect to="/"/>}
 

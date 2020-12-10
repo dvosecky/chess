@@ -15,8 +15,6 @@ app.get('/api/hello', (req, res) => {
 	res.send('hello from the API')
 })
 
-
-
 let games = []
 
 const PAWN = 'pawn'
@@ -41,7 +39,10 @@ const piecePositions = [
 
 const columnLetters = 'abcdefgh'
 
-app.post('/game/create', (req, res) => {
+// for development - delete me
+createGame()
+
+function createGame() {
 	const newGame = {
 		id: games.length
 	}
@@ -73,7 +74,12 @@ app.post('/game/create', (req, res) => {
 	games.push(newGame)
 
 	debug('created game ' + newGame.id)
-	res.status(201).json({ status: 'success', data: { id: newGame.id } })
+	return newGame.id
+}
+
+app.post('/game/create', (req, res) => {
+	const gameId = createGame()
+	res.status(201).json({ status: 'success', data: { id: gameId } })
 })
 
 io.on('connection', (socket) => {
@@ -105,6 +111,19 @@ io.on('connection', (socket) => {
 
 		socket.on('disconnect', () => {
 			debug('disconnected')
+			if (game.white === socket.id) {
+				game.white = null
+			} else if (game.black === socket.id) {
+				game.black = null
+			}
+		})
+
+		socket.on('move', (startSquare, endSquare) => {
+			debug('moved')
+			// find piece on startSquare, move it to endSquare, update the clients
+			const piece = game.pieces.find((piece) => piece.square === startSquare)
+			piece.square = endSquare
+			io.in(gameId).emit('game data', game)
 		})
 	})
 })
