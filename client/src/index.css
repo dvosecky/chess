@@ -81,6 +81,7 @@ button {
 .piece {
   width: calc(var(--board-size) / 8);
   height: calc(var(--board-size) / 8);
+  pointer-events: none;
 }
 
 .white-pawn {
