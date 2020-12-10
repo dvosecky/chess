@@ -28,21 +28,21 @@ function HomePage() {
         </p>
         <button onClick={createGame}>Create Game</button>
       </div>
-      {newGameId !== '' && <NewGame id={newGameId}/>}
+      {newGameId !== '' && <NewGame gameId={newGameId}/>}
     </div>
   );
 }
 
-function NewGame({ id }) {
+function NewGame({ gameId }) {
   const [joinGame, setJoinGame] = useState(false)
 
 	return (
     <div className="sub-container">
       <div className="m-1">
-        Share this link with your opponent: <span className="copy-url">{process.env.REACT_APP_BASEURL + '/game/' + id}</span>
+        Share this link with your opponent: <span className="copy-url">{process.env.REACT_APP_BASEURL + '/game/' + gameId}</span>
       </div>
       <button onClick={() => setJoinGame(true)}>Join Game</button>
-      {joinGame && <Redirect to={'/game/' + id} />}
+      {joinGame && <Redirect to={'/game/' + gameId} />}
     </div>
   )
 }

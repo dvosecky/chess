@@ -106,6 +106,14 @@ io.on('connection', (socket) => {
 		socket.on('disconnect', () => {
 			debug('disconnected')
 		})
+
+		socket.on('move', (startSquare, endSquare) => {
+			debug('moved')
+			// find piece on startSquare, move it to endSquare, update the clients
+			const piece = game.pieces.find((piece) => piece.square === startSquare)
+			piece.square = endSquare
+			io.in(gameId).emit('game data', game)
+		})
 	})
 })
 
