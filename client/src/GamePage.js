@@ -32,7 +32,7 @@ function GamePage() {
 		return squares
 	}, [pieces, side])
 
-	// connect to game
+	// initialize socket, connect to game
 	useEffect(() => {
 		const mySocket = io()
 		mySocket.emit('join', gameId)
@@ -43,7 +43,6 @@ function GamePage() {
 		})
 		
 		mySocket.on('game data', (game) => {
-			console.log('i got game data')
 			if (game.white === mySocket.id) {
 				setSide('white')
 			} else if (game.black === mySocket.id) {
@@ -140,7 +139,7 @@ function GamePage() {
 			pageElement.removeEventListener('touchend', endDrag, { passive: false })
 			pageElement.removeEventListener('mouseup', endDrag)
 		})
-	}, [squares, draggedPiece])
+	}, [squares, draggedPiece, socket])
 
 	return (
 		<div ref={page}>

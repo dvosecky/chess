@@ -15,8 +15,6 @@ app.get('/api/hello', (req, res) => {
 	res.send('hello from the API')
 })
 
-
-
 let games = []
 
 const PAWN = 'pawn'
